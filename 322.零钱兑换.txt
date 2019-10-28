@@ -1,0 +1,91 @@
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回?-1。
+
+示例?1:
+
+输入: coins = [1, 2, 5], amount = 11
+输出: 3 
+解释: 11 = 5 + 5 + 1
+示例 2:
+
+输入: coins = [2], amount = 3
+输出: -1
+
+分析示例：
+每次选择硬币都有三种选择，我们分为选择当前，或者选择后一种，从0开始
+
+边界分析：
+1.每次判断选择的是第一种硬币，有没有超过最大范围
+2.每次判断所剩的钱是否为0或者为负数，为0是上次选择刚好凑完整，为负数是因为上次所选硬币超过了所剩硬币
+
+递归传递参数，所选硬币的索引，所剩钱，可选硬币数组
+添加备忘录：开一个二维数组用来存放每次选择的结果
+
+代码：c++
+int f[10000][10000];
+class Solution {
+public:
+    
+    int min(int a,int b){
+        return a>b?b:a;
+    }
+    
+    int search(int idx,int amount,vector<int>& coins){
+        
+        //选完了最后一种硬币
+        if(idx >= coins.size()){
+            return -1;
+        }
+        
+        //已经凑完整了
+        if(amount == 0){
+            return 0;
+        }
+        
+        //凑钱不合法
+        if(amount < 0){
+            return -1;
+        }
+        int a;
+        
+        
+        if(amount-coins[idx] >= 0 && f[idx][amount-coins[idx]] != -3){
+            a = f[idx][amount-coins[idx]];
+        }else{
+            a = search(idx,amount-coins[idx],coins);
+        }
+        if(a == -1){
+            a = 1000;
+        }else{
+            a++;
+        }
+        
+        int b;
+        if(f[idx+1][amount] != -3){
+            b = f[idx+1][amount];
+        }else{
+            b = search(idx+1,amount,coins);
+        }
+        if(b == -1){
+            b = 1000;
+        }
+        
+        f[idx][amount] = min(a,b);
+        return f[idx][amount];
+    }
+    
+    int coinChange(vector<int>& coins, int amount) {
+        
+       for(int i=0;i<=coins.size();i++)
+           for(int j=0;j<=amount;j++)
+           {
+               f[i][j] = -3;
+           }
+        
+       int res = search(0,amount,coins);
+       if(res >= 1000){
+           return -1;
+       }else{
+           return res;
+       }
+    }
+};
