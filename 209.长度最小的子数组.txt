@@ -1,0 +1,82 @@
+给定一个含有?n?个正整数的数组和一个正整数?s ，找出该数组中满足其和 ≥ s 的长度最小的连续子数组。如果不存在符合条件的连续子数组，返回 0。
+
+示例:?
+
+输入: s = 7, nums = [2,3,1,2,4,3]
+输出: 2
+解释: 子数组?[4,3]?是该条件下的长度最小的连续子数组。
+
+方法一：双指针滑动窗口
+左右指针指向起点，
+当和小于s时，移动右指针
+当和大于s时，计算长度并移动左指针
+
+代码：c++
+class Solution {
+public:
+    int minSubArrayLen(int s, vector<int>& nums) {
+        
+        if(nums.size() <= 0){
+            return 0;
+        }
+        //定义子数组左右边界指针
+        int left=0,right=0,len=-1;
+        int sum=nums[0];
+        while(left<nums.size() && right<nums.size())
+        {      
+            if(sum < s){
+                //不满足要求
+                right++;
+                if(right < nums.size()){
+                    sum += nums[right];
+                }
+            }else{
+                //满足要求
+                if(len < 0){
+                   //赋初值
+                   len = right-left+1; 
+                }else{
+                    if(right-left+1 < len){
+                        len = right-left+1;
+                    }
+                }
+                sum -= nums[left];
+                left++;             
+            }
+        }
+        return len==-1? 0:len;
+    }
+};
+
+代码二：代码的优化，右指针从-1开始，减少了判断
+class Solution {
+public:
+    int minSubArrayLen(int s, vector<int>& nums) {
+        //nums[l...r]为我们的滑动窗口
+        int l=0,r=-1;
+        int sum=0;
+        int res = nums.size()+1;
+        
+        while(l < nums.size())
+        {
+            //窗口的左边界在数组范围内
+            if(r+1 < nums.size() && sum < s){
+                sum += nums[++r];
+            }else{
+                //r已经到头或者sum >= s
+                sum -= nums[l++];
+            }
+            
+            if(sum >= s){
+                res = min(res,r-l+1);
+            }
+        }
+        
+        if(res == nums.size()+1){
+            return 0;
+        }
+
+        return res;
+        
+    }
+};
