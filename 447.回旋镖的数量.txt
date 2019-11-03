@@ -1,0 +1,128 @@
+给定平面上?n 对不同的点，“回旋镖” 是由点表示的元组?(i, j, k)?，其中?i?和?j?之间的距离和?i?和?k?之间的距离相等（需要考虑元组的顺序）。
+
+找到所有回旋镖的数量。你可以假设?n 最大为 500，所有点的坐标在闭区间 [-10000, 10000] 中。
+
+示例:
+
+输入:
+[[0,0],[1,0],[2,0]]
+
+输出:
+2
+
+解释:
+两个回旋镖为 [[1,0],[0,0],[2,0]] 和 [[1,0],[2,0],[0,0]]
+
+方法一：
+遍历每一个点，计算与该点距离相等的点的个数，用map数组保存
+遍历map数组，计算回旋镖的个数
+
+代码一：PHP
+class Solution {
+
+    /**
+     * @param Integer[][] $points
+     * @return Integer
+     */
+    function numberOfBoomerangs($points) {
+        $map = [];
+    
+        $count = count($points);
+        $res = 0;//存放结果
+
+        for($i=0;$i<$count;$i++){
+
+            //计算其他点和i点的距离
+            for($j=0;$j<$count;$j++){
+                if($i!=$j){
+                    //计算点$points[$i]和点$points[$j]的距离
+                    $l = ($points[$i][0] - $points[$j][0])*($points[$i][0] - $points[$j][0]) + ($points[$i][1] - $points[$j][1])*($points[$i][1] - $points[$j][1]);
+
+
+                    if(isset($map[$l])){
+                        $map[$l]++;
+                    }else{
+                        $map[$l]=1;
+                    }
+                }
+
+
+            }
+
+            //遍历所有点后，计算相同距离的点个数
+            foreach($map as $v){
+                if($v >=2 ){
+                    $res += $v*($v-1);
+                }
+            }
+            $map = [];//重置map数组
+        }
+
+        return $res;
+    }
+}
+
+代码二：PHP
+在一的基础上做了时间上的优化，利用空间换时间
+
+class Solution {
+
+    /**
+     * @param Integer[][] $points
+     * @return Integer
+     */
+    function numberOfBoomerangs($points) {
+        $map = [];
+    
+        $count = count($points);
+        $l = [];//存放两点之间的距离
+        $res = 0;//存放结果
+
+        for($i=0;$i<$count;$i++){
+            if(!isset($l[$i])){
+                $l[$i] = [];
+            }            
+            //计算其他点和i点的距离
+            for($j=0;$j<$count;$j++){
+                if($i!=$j){
+
+                    //计算过i和j的距离
+                    if(isset($l[$j][$i])){
+                        $length = $l[$j][$i];
+                        $l[$i][$j] = $length;
+                        if(isset($map[$length])){
+                            $map[$length]++;
+                        }else{
+                            $map[$length]=1;
+                        }
+                        continue;
+                    }
+
+                    //计算点$points[$i]和点$points[$j]的距离
+                    $length = ($points[$i][0] - $points[$j][0])*($points[$i][0] - $points[$j][0]) + ($points[$i][1] - $points[$j][1])*($points[$i][1] - $points[$j][1]);
+
+                    $l[$i][$j] = $length;
+
+                    if(isset($map[$length])){
+                        $map[$length]++;
+                    }else{
+                        $map[$length]=1;
+                    }
+                }
+
+
+            }
+
+            //遍历所有点后，计算相同距离的点个数
+            foreach($map as $v){
+                if($v >=2 ){
+                    $res += $v*($v-1);
+                }
+            }
+            $map = [];//重置map数组
+        }
+
+        return $res;
+    }
+}
+
