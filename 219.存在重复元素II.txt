@@ -1,0 +1,47 @@
+给定一个整数数组和一个整数?k，判断数组中是否存在两个不同的索引?i?和?j，使得?nums [i] = nums [j]，并且 i 和 j?的差的绝对值最大为 k。
+
+示例?1:
+
+输入: nums = [1,2,3,1], k = 3
+输出: true
+示例 2:
+
+输入: nums = [1,0,1,1], k = 1
+输出: true
+示例 3:
+
+输入: nums = [1,2,3,1,2,3], k = 2
+输出: false
+
+方法一：
+遍历nums数组，用一个新数组存放i-k到i之间的元素，查找里面是否有和nums[i]相同的元素，有就返回true
+
+代码PHP：
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $k
+     * @return Boolean
+     */
+    function containsNearbyDuplicate($nums, $k) {
+        if($k == 0){
+            return false;
+        }
+        $record = [];
+        $count = count($nums);
+
+        for($i=0;$i<$count;$i++){
+
+    		if(in_array($nums[$i], $record)){
+    			return true;
+    		}
+    		if(count($record) == $k){
+    			array_shift($record);
+    		}
+    		array_push($record, $nums[$i]);
+        }
+
+        return false;
+    }
+}
