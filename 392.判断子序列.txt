@@ -1,0 +1,100 @@
+给定字符串 s 和 t ，判断 s 是否为 t 的子序列。
+
+你可以认为 s 和 t 中仅包含英文小写字母。字符串 t 可能会很长（长度 ~= 500,000），而 s 是个短字符串（长度 <=100）。
+
+字符串的一个子序列是原始字符串删除一些（也可以不删除）字符而不改变剩余字符相对位置形成的新字符串。（例如，"ace"是"abcde"的一个子序列，而"aec"不是）。
+
+示例 1:
+s = "abc", t = "ahbgdc"
+
+返回 true.
+
+示例 2:
+s = "axc", t = "ahbgdc"
+
+返回 false.
+
+后续挑战 :
+
+如果有大量输入的 S，称作S1, S2, ... , Sk 其中 k >= 10亿，你需要依次检查它们是否为 T 的子序列。在这种情况下，你会怎样改变代码？
+
+方法一：
+双指针，遍历t串，代码很简洁清晰
+代码：c++
+class Solution {
+public:
+    bool isSubsequence(string s, string t) {
+        
+        if(s.empty()){
+            return true;
+        }
+        
+        int spos,tpos;
+        tpos = 0;
+        spos = 0;
+        
+        while(tpos < t.size())
+        {
+            if(t[tpos] == s[spos])
+                spos++;
+            
+            if(spos == s.size())
+                return true;
+            
+            tpos++;
+        }
+        
+        return false;
+    }
+};
+
+方法二：
+递归，动态规划，这题不适合用，最后 13 / 14 个通过测试用例
+代码：PHP
+
+class Solution {
+    public $data = [];
+    
+    function search($idx,$s,$t){
+        if($s == ''){
+            return true;
+        }
+        
+        if($idx >= strlen($t)){
+            return false;
+        }
+        
+        if($s == $t){
+            return true;
+        }
+        
+        if(isset($data[$t])){
+            return $data[$t];
+        }
+        
+        //删除当前元素
+        $t1 = substr($t,0,$idx).substr($t,$idx+1);
+        $this->data[$t] = $this->search($idx,$s,$t1) || $this->search($idx+1,$s,$t);
+        
+        return $this->data[$t];
+    }
+    
+    /**
+     * @param String $s
+     * @param String $t
+     * @return Boolean
+     */
+    function isSubsequence($s, $t) {
+        $idx = 0;
+        $len = strlen($t);
+        $t1 = '';
+        while($idx < $len){
+            if(strstr($s,$t[$idx])){
+                $t1 .= $t[$idx];
+            }
+            $idx++;
+        }
+        return $this->search(0,$s,$t1);
+    }
+    
+}
